@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+}
+
+input[type="text"] {
+  background: var(--foreground);
+  color: var(--background);
+  padding: 4px;
+  display: block;
+  margin: 4px;
+  width: 350px;
+  border-width: 2px;
+}
+
+.action {
+  @apply text-green-500 p-1 m-1 border-1 border-gray-500 inline-block disabled:text-yellow-500;
+}
+
+.title {
+  @apply py-20 mb-20 font-extrabold text-4xl border-b-1 border-gray-500;
+}

@@ -1,0 +1,15 @@
+{
+  "name": "scrum-estimation",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently 'npm run dev --workspace=@workspace/web' 'npm run dev --workspace=@workspace/websockets'"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

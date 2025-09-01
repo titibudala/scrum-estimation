@@ -1,0 +1,27 @@
+{
+  "name": "@workspace/shared",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    "./token": {
+      "import": "./dist/token.js",
+      "require": "./dist/token.js",
+      "default": "./dist/token.js",
+      "types": "./dist/token.d.ts"
+    },
+    "./validator": {
+      "import": "./dist/validator.js",
+      "require": "./dist/validator.js",
+      "default": "./dist/validator.js",
+      "types": "./dist/validator.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "jose": "^6.1.0",
+    "typescript": "^5.9.2",
+    "zod": "^4.1.4"
+  }
+}
