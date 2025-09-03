@@ -8,8 +8,6 @@ import { JoinRoomSchema } from "@workspace/shared/validator";
 import { getJWTPayload } from "@workspace/shared/token";
 
 export async function joinRoom(_: any, formData: FormData) {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
   const rawData = {
     roomId: formData.get("roomId") as string,
     playerName: formData.get("playerName") as string,

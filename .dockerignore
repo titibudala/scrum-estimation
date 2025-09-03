@@ -1,0 +1,37 @@
+# # Node modules and caches
+# node_modules
+# # **/node_modules
+# npm-debug.log
+# yarn-error.log
+# pnpm-debug.log
+
+# # Build outputs
+# .next
+# out
+# dist
+
+# # Logs
+# *.log
+# *.pid
+# *.seed
+# *.pid.lock
+
+# Environment files (don’t bake secrets into images!)
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# # OS junk
+# .DS_Store
+# Thumbs.db
+
+# # Git
+# .git
+# .gitignore
+
+# # IDE/editor
+# .vscode
+# .idea
+# *.swp

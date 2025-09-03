@@ -2,7 +2,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { roomSocket } from "@/app/_lib/socket";
 
-export default function userRoomSocket() {
+export default function useRoomSocket() {
   const { roomId } = useParams();
   const [roomConfig, setRoomConfig] = useState<Record<any, any>>();
   const [verifiedPlayers, setVerifiedPlayers] = useState<Record<any, any>[]>(

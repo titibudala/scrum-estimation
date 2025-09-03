@@ -8,8 +8,6 @@ import { CreateRoomSchema } from "@workspace/shared/validator";
 import { getJWTPayload } from "@workspace/shared/token";
 
 export async function createRoom(_: any, formData: FormData) {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
   const newRoomId = crypto.randomUUID();
 
   try {
