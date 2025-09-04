@@ -2,7 +2,9 @@ import { createClient } from "redis";
 import { unflatten } from "./utils.js";
 import { roomSocket } from "../socketio/client.js";
 
-export const redis = await createClient()
+export const redis = await createClient({
+  url: process.env.REDIS_URL,
+})
   .on("error", (err) => console.log("Redis Client Error", err))
   .connect();
 

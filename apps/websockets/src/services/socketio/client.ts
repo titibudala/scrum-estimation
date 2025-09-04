@@ -1,8 +1,5 @@
 import { Server } from "socket.io";
 import { httpServer } from "../express/client.js";
-import { validateUser } from "./utils.js";
-
-console.log("--------cacacacacac", process.env.WEBSCOKET_CORS_ORIGIN);
 
 const io = new Server(httpServer, {
   cors: {

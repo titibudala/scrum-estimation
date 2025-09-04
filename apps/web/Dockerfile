@@ -1,3 +1,5 @@
+# syntax=docker.io/docker/dockerfile:1.18.0-labs
+
 FROM node:22-alpine AS base
 
 FROM base AS deps
@@ -11,7 +13,10 @@ RUN npm ci
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY --exclude=./apps/websockets . .
+ARG NEXT_PUBLIC_WEBSOCKET_API_URL
+ENV NEXT_PUBLIC_WEBSOCKET_API_URL=${NEXT_PUBLIC_WEBSOCKET_API_URL}
+RUN npm run build --workspace ./packages/shared/
 RUN npm run build --workspace ./apps/web/
 
 FROM base AS runner

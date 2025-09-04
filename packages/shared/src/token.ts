@@ -1,13 +1,14 @@
 import * as jose from "jose";
 
-const alg = "HS256";
-const localSecret = new TextEncoder().encode("randomDummyStringForNow");
+type Secret = Uint8Array | CryptoKey | jose.KeyObject | jose.JWK;
 
-export async function getJWTPayload(token?: string, secret = localSecret) {
-  if (!token) return {};
+export async function getJWTPayload(token?: string, secret?: string) {
+  if (!token || !secret) return {};
+
+  const sanitizedSecret = new TextEncoder().encode(secret);
 
   try {
-    const { payload } = await jose.jwtVerify(token, secret);
+    const { payload } = await jose.jwtVerify(token, sanitizedSecret);
 
     return payload;
   } catch {
@@ -15,11 +16,16 @@ export async function getJWTPayload(token?: string, secret = localSecret) {
   }
 }
 
-export async function signJWTPayload(payload: Record<string, any>) {
+export async function signJWTPayload(
+  payload?: jose.JWTPayload,
+  secret?: string
+) {
+  const sanitizedSecret = new TextEncoder().encode(secret);
+
   const jwt = await new jose.SignJWT(payload)
-    .setProtectedHeader({ alg })
+    .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .sign(localSecret);
+    .sign(sanitizedSecret);
 
   return jwt;
 }

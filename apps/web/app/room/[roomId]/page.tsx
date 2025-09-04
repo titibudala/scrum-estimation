@@ -16,7 +16,8 @@ export default async function RoomMainPage({
   const parsedCookies = await cookies();
 
   const { userId } = await getJWTPayload(
-    parsedCookies.get("user-session")?.value
+    parsedCookies.get("session")?.value,
+    process.env.SESSION_TOKEN
   );
 
   const isRoomAvailable = await redis.exists(`room:${roomId}:config`);

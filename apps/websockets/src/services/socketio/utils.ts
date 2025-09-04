@@ -11,7 +11,7 @@ export async function validateUser(
   const parsedCookies = cookie.parse(socket.handshake.headers.cookie || "");
   const roomId = socket.handshake.query.roomId as string;
 
-  const { userId } = await getJWTPayload(parsedCookies["user-session"]);
+  const { userId } = await getJWTPayload(parsedCookies["session"], process.env.SESSION_TOKEN);
 
   if (userId) {
     socket.data.userId = userId;
