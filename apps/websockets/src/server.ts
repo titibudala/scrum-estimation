@@ -9,6 +9,8 @@ roomJoinSocket.use(validateUser);
 // TODO: Clean-up these websockets callbacks
 
 roomJoinSocket.on("connection", async (socket) => {
+  console.log("SOCKET - WAITING TO JOIN");
+
   const userId = socket.data.userId;
   const roomId = socket.handshake.query.roomId as string;
 
@@ -34,6 +36,8 @@ roomJoinSocket.on("connection", async (socket) => {
 });
 
 roomSocket.on("connection", async (socket) => {
+  console.log("SOCKET - JOINED");
+
   const userId = socket.data.userId;
   const roomId = socket.handshake.query.roomId as string;
 
