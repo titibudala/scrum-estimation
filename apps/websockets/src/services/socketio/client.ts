@@ -5,10 +5,10 @@ const io = new Server(httpServer, {
   cors: {
     origin: process.env.WEBSCOKET_CORS_ORIGIN,
     credentials: true,
-    // methods: ["GET", "POST"],
+    methods: ["GET", "POST"],
   },
-  // allowEIO3: true,
-  // transports: ["polling", "websocket"],
+  allowEIO3: true,
+  transports: ["polling", "websocket"],
 });
 
 const roomSocket = io.of("/room");
