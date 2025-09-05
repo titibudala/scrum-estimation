@@ -5,10 +5,10 @@ services:
       context: .
       dockerfile: apps/web/Dockerfile
       args:
-        - NEXT_PUBLIC_WEBSOCKET_API_URL=http://localhost:3001
+        - NEXT_PUBLIC_WEBSOCKET_API_URL=${NEXT_PUBLIC_WEBSOCKET_API_URL}
     environment:
-      - REDIS_URL=redis://redis:6379
-      - SESSION_TOKEN=changeAndHideMeM8WithARealEnvironmentVariable
+      - REDIS_URL=${REDIS_URL}
+      - SESSION_TOKEN=${SESSION_TOKEN}
     ports:
       - "3000:3000"
     depends_on:
@@ -22,10 +22,10 @@ services:
       context: .
       dockerfile: apps/websockets/Dockerfile
     environment:
-      - WEBSCOKET_CORS_ORIGIN=http://localhost:3000
-      - SERVER_PORT=3001
-      - REDIS_URL=redis://redis:6379
-      - SESSION_TOKEN=changeAndHideMeM8WithARealEnvironmentVariable
+      - WEBSCOKET_CORS_ORIGIN=${WEBSCOKET_CORS_ORIGIN}
+      - SERVER_PORT=${SERVER_PORT}
+      - REDIS_URL=${REDIS_URL}
+      - SESSION_TOKEN=${SESSION_TOKEN}
     ports:
       - "3001:3001"
     depends_on:
