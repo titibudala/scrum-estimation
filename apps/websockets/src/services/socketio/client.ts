@@ -8,6 +8,7 @@ const io = new Server(httpServer, {
     methods: ["GET", "POST"],
   },
   allowEIO3: true,
+  transports: ["websocket"]
 });
 
 const roomSocket = io.of("/room");
