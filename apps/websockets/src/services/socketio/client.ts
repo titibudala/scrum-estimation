@@ -5,7 +5,9 @@ const io = new Server(httpServer, {
   cors: {
     origin: process.env.WEBSCOKET_CORS_ORIGIN,
     credentials: true,
+    methods: ["GET", "POST"],
   },
+  allowEIO3: true,
 });
 
 const roomSocket = io.of("/room");
