@@ -35,5 +35,5 @@ services:
   redis:
     image: redis:alpine
     ports:
-      - "6379:6379"
+      - "3002:6379"
     restart: unless-stopped

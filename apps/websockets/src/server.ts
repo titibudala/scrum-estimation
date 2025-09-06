@@ -2,6 +2,9 @@ import { httpServer } from "./services/express/client.js";
 import { redis } from "./services/redis/client.js";
 import { roomJoinSocket, roomSocket } from "./services/socketio/client.js";
 import { validateUser } from "./services/socketio/utils.js";
+import logger from "./services/logger/client.js";
+
+logger.info("INIT THE SERVER");
 
 roomSocket.use(validateUser);
 roomJoinSocket.use(validateUser);
@@ -95,5 +98,10 @@ roomSocket.on("connection", async (socket) => {
 
   socket.emit("room:config", roomConfig);
 });
+
+logger.info(
+  "This is the port that the server listens on :",
+  process.env.SERVER_PORT
+);
 
 httpServer.listen(process.env.SERVER_PORT);
