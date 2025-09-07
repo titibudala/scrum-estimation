@@ -41,7 +41,7 @@ export async function joinRoom(_: any, formData: FormData) {
 
     const isAdminUser = userId === adminId;
 
-    redis.hSet(`room:${validateData.data.roomId}:players`, {
+    await redis.hSet(`room:${validateData.data.roomId}:players`, {
       [`${userId}:id`]: userId as string,
       [`${userId}:name`]: validateData.data.playerName,
       [`${userId}:active`]: 0,
