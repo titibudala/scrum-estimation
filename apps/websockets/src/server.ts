@@ -4,6 +4,9 @@ import { roomJoinSocket, roomSocket } from "./services/socketio/client.js";
 import { validateUser } from "./services/socketio/utils.js";
 import logger from "./services/logger/client.js";
 
+import dotenv from "dotenv";
+dotenv.config();
+
 logger.info("INIT THE SERVER");
 
 roomSocket.use(validateUser);

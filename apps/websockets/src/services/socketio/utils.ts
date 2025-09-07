@@ -5,22 +5,30 @@ import { getJWTPayload } from "@workspace/shared/token";
 import { redis } from "../redis/client.js";
 import logger from "../logger/client.js";
 
+import dotenv from "dotenv";
+dotenv.config();
+
 export async function validateUser(
   socket: Socket,
   next: (err?: ExtendedError | undefined) => void
 ) {
+  logger.info("WS - VALIDATE USER 0 :", "\n", socket.handshake.headers.cookie);
   const parsedCookies = cookie.parse(socket.handshake.headers.cookie || "");
 
-  logger.info("WS - VALIDATE USER 1 :", parsedCookies);
-
+  logger.info("WS - VALIDATE USER 1 :", "\n", parsedCookies);
+  
   const roomId = socket.handshake.query.roomId as string;
 
-  const { userId } = await getJWTPayload(
+  logger.info("WS - VALIDATE USER 1 :", "\n", parsedCookies["session"], process.env.SESSION_TOKEN);
+
+  const response = await getJWTPayload(
     parsedCookies["session"],
     process.env.SESSION_TOKEN
   );
 
-  logger.info("WS - VALIDATE USER 2 :", userId);
+  logger.info("WS - VALIDATE USER 3 :", response);
+
+  const userId = response.userId;
 
   if (userId) {
     socket.data.userId = userId;
