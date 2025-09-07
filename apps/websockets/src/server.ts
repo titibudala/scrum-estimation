@@ -39,7 +39,7 @@ roomJoinSocket.on("connection", async (socket) => {
 });
 
 roomSocket.on("connection", async (socket) => {
-  console.log("SOCKET - JOINED");
+  console.log("WS - ROOM :", socket.data.userId);
 
   const userId = socket.data.userId;
   const roomId = socket.handshake.query.roomId as string;
