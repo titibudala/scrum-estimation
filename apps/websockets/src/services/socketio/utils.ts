@@ -12,14 +12,14 @@ export async function validateUser(
   socket: Socket,
   next: (err?: ExtendedError | undefined) => void
 ) {
-  logger.info("WS - VALIDATE USER 0 :", "\n", socket.handshake.headers.cookie);
+  logger.info("WS - VALIDATE USER 0 :", socket.handshake.headers.cookie);
   const parsedCookies = cookie.parse(socket.handshake.headers.cookie || "");
 
-  logger.info("WS - VALIDATE USER 1 :", "\n", parsedCookies);
+  logger.info("WS - VALIDATE USER 1 :", parsedCookies);
   
   const roomId = socket.handshake.query.roomId as string;
 
-  logger.info("WS - VALIDATE USER 1 :", "\n", parsedCookies["session"], process.env.SESSION_TOKEN);
+  logger.info("WS - VALIDATE USER 2 :", parsedCookies["session"], process.env.SESSION_TOKEN);
 
   const response = await getJWTPayload(
     parsedCookies["session"],
