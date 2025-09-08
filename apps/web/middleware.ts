@@ -4,7 +4,7 @@ import { getJWTPayload, signJWTPayload } from "@workspace/shared/token";
 
 export async function middleware(request: NextRequest) {
   const { userId } = await getJWTPayload(
-    request.cookies.get("session")?.value,
+    request.cookies.get("scrum-estimation-session")?.value,
     process.env.SESSION_TOKEN
   );
 
@@ -16,12 +16,13 @@ export async function middleware(request: NextRequest) {
     );
 
     response.cookies.set({
-      name: "session",
+      name: "scrum-estimation-session",
       value: signedJwt,
       path: "/",
       sameSite: true,
       httpOnly: true,
       secure: true,
+      domain: "titibudala.ro",
     });
 
     return response;

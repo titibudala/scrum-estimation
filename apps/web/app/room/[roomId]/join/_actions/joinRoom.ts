@@ -27,7 +27,7 @@ export async function joinRoom(_: any, formData: FormData) {
     }
 
     const cookieStore = await cookies();
-    const userSessionJWT = cookieStore.get("session")?.value;
+    const userSessionJWT = cookieStore.get("scrum-estimation-session")?.value;
     const { userId } = await getJWTPayload(userSessionJWT, process.env.SESSION_TOKEN);
 
     if (!userId) throw Error("No active session found");

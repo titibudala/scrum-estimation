@@ -16,7 +16,7 @@ export default async function RoomMainPage({
   const parsedCookies = await cookies();
 
   const { userId } = await getJWTPayload(
-    parsedCookies.get("session")?.value,
+    parsedCookies.get("scrum-estimation-session")?.value,
     process.env.SESSION_TOKEN
   );
 

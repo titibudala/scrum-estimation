@@ -16,13 +16,17 @@ export async function validateUser(
   const parsedCookies = cookie.parse(socket.handshake.headers.cookie || "");
 
   logger.info("WS - VALIDATE USER 1 :", parsedCookies);
-  
+
   const roomId = socket.handshake.query.roomId as string;
 
-  logger.info("WS - VALIDATE USER 2 :", parsedCookies["session"], process.env.SESSION_TOKEN);
+  logger.info(
+    "WS - VALIDATE USER 2 :",
+    parsedCookies["scrum-estimation-session"],
+    process.env.SESSION_TOKEN
+  );
 
   const response = await getJWTPayload(
-    parsedCookies["session"],
+    parsedCookies["scrum-estimation-session"],
     process.env.SESSION_TOKEN
   );
 
