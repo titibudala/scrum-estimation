@@ -23,7 +23,7 @@ export default async function RoomMainPage({
   const isRoomAvailable = await redis.exists(`room:${roomId}:config`);
 
   if (!isRoomAvailable || !userId) {
-    return redirect("/room/create");
+    throw new Error("The room is unavailable");
   }
 
   const isPlayerAvailable = await redis.hExists(

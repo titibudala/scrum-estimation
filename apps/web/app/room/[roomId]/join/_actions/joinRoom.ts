@@ -28,7 +28,10 @@ export async function joinRoom(_: any, formData: FormData) {
 
     const cookieStore = await cookies();
     const userSessionJWT = cookieStore.get("scrum-estimation-session")?.value;
-    const { userId } = await getJWTPayload(userSessionJWT, process.env.SESSION_TOKEN);
+    const { userId } = await getJWTPayload(
+      userSessionJWT,
+      process.env.SESSION_TOKEN
+    );
 
     if (!userId) throw Error("No active session found");
 
@@ -44,6 +47,7 @@ export async function joinRoom(_: any, formData: FormData) {
     await redis.hSet(`room:${validateData.data.roomId}:players`, {
       [`${userId}:id`]: userId as string,
       [`${userId}:name`]: validateData.data.playerName,
+      [`${userId}:expertise`]: validateData.data.playerExpertise,
       [`${userId}:active`]: 0,
       [`${userId}:verified`]: +isAdminUser,
     });

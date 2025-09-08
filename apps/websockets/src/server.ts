@@ -12,8 +12,6 @@ roomJoinSocket.use(validateUser);
 // TODO: Clean-up these websockets callbacks
 
 roomJoinSocket.on("connection", async (socket) => {
-  console.log("SOCKET - WAITING TO JOIN");
-
   const userId = socket.data.userId;
   const roomId = socket.handshake.query.roomId as string;
 
@@ -22,16 +20,17 @@ roomJoinSocket.on("connection", async (socket) => {
   socket.on("disconnect", async () => {
     socket.leave(userId);
 
-    const response = await redis.hGet(
+    const isPlayerVerified = await redis.hGet(
       `room:${roomId}:players`,
       `${userId}:verified`
     );
 
-    if (!Number(response)) {
+    if (!Number(isPlayerVerified)) {
       await redis.hDel(`room:${roomId}:players`, [
         `${userId}:id`,
-        `${userId}:active`,
         `${userId}:name`,
+        `${userId}:expertise`,
+        `${userId}:active`,
         `${userId}:verified`,
       ]);
     }
@@ -39,8 +38,6 @@ roomJoinSocket.on("connection", async (socket) => {
 });
 
 roomSocket.on("connection", async (socket) => {
-  console.log("WS - ROOM :", socket.data.userId);
-
   const userId = socket.data.userId;
   const roomId = socket.handshake.query.roomId as string;
 
@@ -55,8 +52,9 @@ roomSocket.on("connection", async (socket) => {
         `room:${roomId}:players`,
         [
           `${userId}:id`,
-          `${userId}:active`,
           `${userId}:name`,
+          `${userId}:expertise`,
+          `${userId}:active`,
           `${userId}:verified`,
         ],
         60
@@ -71,8 +69,9 @@ roomSocket.on("connection", async (socket) => {
         `room:${roomId}:players`,
         [
           `${playerId}:id`,
-          `${playerId}:active`,
           `${playerId}:name`,
+          `${playerId}:expertise`,
+          `${playerId}:active`,
           `${playerId}:verified`,
         ],
         60
@@ -88,15 +87,18 @@ roomSocket.on("connection", async (socket) => {
     }),
     redis.hPersist(`room:${roomId}:players`, [
       `${userId}:id`,
-      `${userId}:active`,
       `${userId}:name`,
+      `${userId}:expertise`,
+      `${userId}:active`,
       `${userId}:verified`,
     ]),
   ]);
 
   const roomConfig = await redis.json.get(`room:${roomId}:config`);
+  const roomTickets = await redis.json.get(`room:${roomId}:ticket`);
 
   socket.emit("room:config", roomConfig);
+  socket.emit("room:ticket", roomTickets);
 });
 
 httpServer.listen(process.env.SERVER_PORT);

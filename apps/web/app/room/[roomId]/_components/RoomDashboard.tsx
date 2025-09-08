@@ -1,22 +1,33 @@
 "use client";
 
 import useRoomSocket from "../_hooks/useRoomSocket";
+import RoomTicketCreate from "./RoomTicketCreate";
+import RoomTicketList from "./RoomTicketList";
 
 export default function RoomDashboard() {
-  const { roomConfig, verifiedPlayers, unverifiedPlayers, verifyPlayer } =
-    useRoomSocket();
+  const {
+    roomConfig,
+    roomTickets,
+    verifiedPlayers,
+    unverifiedPlayers,
+    verifyPlayer,
+  } = useRoomSocket();
 
   return (
     <div className="flex">
       <div className="w-full">
-        <p className="py-6 font-bold">VERIFIED PLAYERS</p>
+        <p className="py-6 font-bold text-xl">VERIFIED PLAYERS</p>
         {verifiedPlayers.map((player) => (
           <ul className="pb-2" key={player.id}>
             <li>
-              <span className="text-gray-500">ID:</span> {player.id}
+              <span className="text-gray-500">PLAYER ID:</span> {player.id}
             </li>
             <li>
               <span className="text-gray-500">NAME:</span> {player.name}
+            </li>
+            <li>
+              <span className="text-gray-500">EXPERTISE:</span>{" "}
+              {player.expertise}
             </li>
             <li>
               <span className="text-gray-500">VERIFIED:</span> {player.verified}
@@ -27,18 +38,22 @@ export default function RoomDashboard() {
           </ul>
         ))}
 
-        <p className="py-6 font-bold">PLAYERS ON WAITING LIST</p>
+        <p className="py-6 font-bold text-xl">PLAYERS ON WAITING LIST</p>
         {unverifiedPlayers.map((player) => (
           <div key={player.id}>
             <ul className="pb-2">
               <li>
-                <span className="text-gray-500">ID:</span> {player.id}
+                <span className="text-gray-500">PLAYER ID:</span> {player.id}
               </li>
               <li>
                 <span className="text-gray-500">NAME:</span> {player.name}
               </li>
               <li>
-                <span className="text-gray-500">VERIFIED:</span>{" "}
+                <span className="text-gray-500">EXPERTISE:</span>
+                {player.expertise}
+              </li>
+              <li>
+                <span className="text-gray-500">VERIFIED:</span>
                 {player.verified}
               </li>
               <li>
@@ -60,19 +75,23 @@ export default function RoomDashboard() {
       </div>
 
       <div className="w-full">
-        <p className="py-6 font-bold">ROOM CONFIG</p>
+        <p className="py-6 font-bold text-xl">ROOM CONFIG</p>
         <ul className="pb-2">
           <li>
-            <span className="text-gray-500">ROOM NAME: </span>
-            {roomConfig?.roomName}
+            <span className="text-gray-500">ROOM ID: </span>
+            {roomConfig?.id}
           </li>
           <li>
             <span className="text-gray-500">ADMIN ID: </span>
             {roomConfig?.adminId}
           </li>
           <li>
+            <span className="text-gray-500">ROOM NAME: </span>
+            {roomConfig?.roomName}
+          </li>
+          <li>
             <span className="text-gray-500">MEASUREMENT: </span>
-            {roomConfig?.measurement}
+            {roomConfig?.measurement?.join(", ")}
           </li>
           <li>
             <span className="text-gray-500">SECURITY: </span>
@@ -80,8 +99,11 @@ export default function RoomDashboard() {
           </li>
         </ul>
 
-        <p className="py-6 font-bold">TICKETS TO MEASURE</p>
-        <span className="text-gray-500">TBD</span>
+        <p className="py-6 font-bold text-xl">TICKETS TO MEASURE</p>
+
+        <RoomTicketCreate />
+
+        <RoomTicketList roomTickets={roomTickets} />
       </div>
     </div>
   );

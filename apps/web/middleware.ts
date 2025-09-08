@@ -23,7 +23,7 @@ export async function middleware(request: NextRequest) {
       httpOnly: true,
       secure: true,
       // TODO: In place of setting the cookie for the entire domain - look into how to use sub-subdomains with cloduflare for free.
-      domain: "titibudala.ro",
+      domain: process.env.SESSION_COOKIE_DOMAIN,
     });
 
     return response;

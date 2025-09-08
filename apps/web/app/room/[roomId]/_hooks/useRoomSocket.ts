@@ -5,6 +5,7 @@ import { roomSocket } from "@/app/_lib/socket";
 export default function useRoomSocket() {
   const { roomId } = useParams();
   const [roomConfig, setRoomConfig] = useState<Record<any, any>>();
+  const [roomTickets, setRoomTickets] = useState<Record<any, any>[]>();
   const [verifiedPlayers, setVerifiedPlayers] = useState<Record<any, any>[]>(
     []
   );
@@ -31,6 +32,10 @@ export default function useRoomSocket() {
       setRoomConfig(payload);
     });
 
+    roomSocket.on("room:ticket", (payload) => {
+      setRoomTickets(payload);
+    });
+
     roomSocket.connect();
 
     return () => {
@@ -38,7 +43,13 @@ export default function useRoomSocket() {
     };
   }, []);
 
-  return { roomConfig, verifiedPlayers, unverifiedPlayers, verifyPlayer };
+  return {
+    roomConfig,
+    roomTickets,
+    verifiedPlayers,
+    unverifiedPlayers,
+    verifyPlayer,
+  };
 }
 
 function splitVerifiedPlayers(players: Record<any, any> = {}) {

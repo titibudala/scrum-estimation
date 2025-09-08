@@ -30,3 +30,10 @@ export const AcceptPlayerSchema = z.object({
   roomId: z.uuid({ version: "v4" }),
   playerToAcceptId: z.uuid(),
 });
+
+export const CreateTicketSchema = z.object({
+  roomId: z.uuid({ version: "v4" }),
+  ticketTitle: z
+    .string()
+    .min(3, "The ticket title needs to be at least 3 characters long"),
+});

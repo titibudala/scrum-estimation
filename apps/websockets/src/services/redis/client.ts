@@ -8,13 +8,13 @@ export const redis = await createClient({
   .on("error", (err) => console.log("Redis Client Error", err))
   .connect();
 
-redis.configSet("notify-keyspace-events", "Kh");
+redis.configSet("notify-keyspace-events", "Khd");
 
 export const redisSubscriber = await redis.duplicate().connect();
 
 const keyspace = "__keyspace@0__";
 
-await redisSubscriber.pSubscribe(
+redisSubscriber.pSubscribe(
   `${keyspace}:room:*:players`,
   async (_message, channel) => {
     const key = channel.replace(`${keyspace}:`, "");
@@ -24,5 +24,29 @@ await redisSubscriber.pSubscribe(
     const sanitizedResponse = unflatten(response);
 
     roomSocket.to(roomId).emit("room:player", sanitizedResponse);
+  }
+);
+
+redisSubscriber.pSubscribe(
+  `${keyspace}:room:*:ticket`,
+  async (_message, channel) => {
+    const key = channel.replace(`${keyspace}:`, "");
+    const roomId = key.split(":")[1] || "";
+
+    const response = await redis.json.get(`room:${roomId}:ticket`);
+
+    roomSocket.to(roomId).emit("room:ticket", response);
+  }
+);
+
+redisSubscriber.pSubscribe(
+  `${keyspace}:room:*:config`,
+  async (_message, channel) => {
+    const key = channel.replace(`${keyspace}:`, "");
+    const roomId = key.split(":")[1] || "";
+
+    const response = await redis.json.get(`room:${roomId}:config`);
+
+    roomSocket.to(roomId).emit("room:config", response);
   }
 );

@@ -14,7 +14,7 @@ export default async function RoomJoinPage({
   const isRoomAvailable = await redis.exists(`room:${roomId}:config`);
 
   if (!isRoomAvailable) {
-    throw new Error("Something went wrong");
+    throw new Error("The room is unavailable");
   }
 
   return (

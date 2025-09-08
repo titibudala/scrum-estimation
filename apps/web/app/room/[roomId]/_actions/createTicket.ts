@@ -1,23 +1,19 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { z } from "zod";
 import { redis } from "@/app/_lib/redis";
-import { CreateRoomSchema } from "@workspace/shared/validator";
+import { CreateTicketSchema } from "@workspace/shared/validator";
 import { getJWTPayload } from "@workspace/shared/token";
 
-export async function createRoom(_: any, formData: FormData) {
-  const newRoomId = crypto.randomUUID();
-
+export async function createTicket(_: any, formData: FormData) {
   try {
     const rawData = {
-      roomName: formData.get("roomName") as string,
-      measurementType: formData.get("measurementType") as string,
-      securityType: formData.get("securityType") as string,
+      roomId: formData.get("roomId") as string,
+      ticketTitle: formData.get("ticketTitle") as string,
     };
 
-    const validateData = CreateRoomSchema.safeParse(rawData);
+    const validateData = CreateTicketSchema.safeParse(rawData);
 
     if (!validateData.success) {
       return {
@@ -37,22 +33,19 @@ export async function createRoom(_: any, formData: FormData) {
 
     if (!userId) throw Error("No active session found");
 
-    Promise.all([
-      redis.json.SET(`room:${newRoomId}:config`, "$", {
-        id: newRoomId,
-        adminId: userId as string,
-        roomName: validateData.data.roomName,
-        measurement: [0, 1, 2, 3, 5, 8],
-        security: validateData.data.securityType,
-      }),
-      redis.json.SET(`room:${newRoomId}:ticket`, "$", []),
-    ]);
+    await redis.json.ARRAPPEND(`room:${validateData.data.roomId}:ticket`, "$", {
+      id: crypto.randomUUID(),
+      ticketTitle: validateData.data.ticketTitle,
+    });
+
+    return {
+      success: true,
+      message: "Ticket created",
+    };
   } catch (error: any) {
     return {
       success: false,
       message: error?.message || "Something went wrong",
     };
   }
-
-  redirect(`/room/${newRoomId}/join`);
 }
