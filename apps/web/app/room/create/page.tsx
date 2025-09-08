@@ -58,19 +58,6 @@ export default function RoomCreatePage() {
           <div>
             <input
               type="radio"
-              id="room-security-open"
-              name="securityType"
-              value="OPEN"
-              required
-              disabled
-            />
-            <label htmlFor="room-security-open" className="ml-2">
-              Open for anyone who has the room identifier
-            </label>
-          </div>
-          <div>
-            <input
-              type="radio"
               id="security-waiting-room"
               name="securityType"
               value="WAITING_ROOM"

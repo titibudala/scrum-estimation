@@ -1,7 +1,5 @@
 import * as jose from "jose";
 
-type Secret = Uint8Array | CryptoKey | jose.KeyObject | jose.JWK;
-
 export async function getJWTPayload(token?: string, secret?: string) {
   if (!token || !secret) return {};
 

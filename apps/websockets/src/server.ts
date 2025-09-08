@@ -4,10 +4,7 @@ import { roomJoinSocket, roomSocket } from "./services/socketio/client.js";
 import { validateUser } from "./services/socketio/utils.js";
 import logger from "./services/logger/client.js";
 
-import dotenv from "dotenv";
-dotenv.config();
-
-logger.info("INIT THE SERVER");
+logger.info("Server is initialized");
 
 roomSocket.use(validateUser);
 roomJoinSocket.use(validateUser);
@@ -101,10 +98,5 @@ roomSocket.on("connection", async (socket) => {
 
   socket.emit("room:config", roomConfig);
 });
-
-logger.info(
-  "This is the port that the server listens on :",
-  process.env.SERVER_PORT
-);
 
 httpServer.listen(process.env.SERVER_PORT);
