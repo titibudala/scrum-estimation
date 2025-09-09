@@ -42,8 +42,9 @@ export async function createRoom(_: any, formData: FormData) {
         id: newRoomId,
         adminId: userId as string,
         roomName: validateData.data.roomName,
-        measurement: [0, 1, 2, 3, 5, 8],
+        measurement: ["0", "1", "2", "3", "5", "8"],
         security: validateData.data.securityType,
+        activeTicket: "",
       }),
       redis.json.SET(`room:${newRoomId}:ticket`, "$", []),
     ]);

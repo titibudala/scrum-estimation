@@ -35,6 +35,12 @@ redisSubscriber.pSubscribe(
 
     const response = await redis.json.get(`room:${roomId}:ticket`);
 
+    for (const ticket of response as any[]) {
+      if (!ticket.completed) {
+        delete ticket.votes;
+      }
+    }
+
     roomSocket.to(roomId).emit("room:ticket", response);
   }
 );

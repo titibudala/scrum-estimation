@@ -13,8 +13,16 @@ export default function useRoomSocket() {
     Record<any, any>[]
   >([]);
 
+  const isActiveTicketCompleted = roomTickets?.find(
+    (ticket) => ticket.id === roomConfig?.activeTicket
+  )?.completed;
+
   function verifyPlayer(playerId: string) {
     roomSocket.emit("room:player:verify", playerId);
+  }
+
+  function voteTicket(voteValue: string) {
+    roomSocket.emit("room:player:vote", voteValue);
   }
 
   useEffect(() => {
@@ -48,7 +56,9 @@ export default function useRoomSocket() {
     roomTickets,
     verifiedPlayers,
     unverifiedPlayers,
+    isActiveTicketCompleted,
     verifyPlayer,
+    voteTicket,
   };
 }
 

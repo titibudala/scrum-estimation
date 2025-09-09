@@ -37,3 +37,12 @@ export const CreateTicketSchema = z.object({
     .string()
     .min(3, "The ticket title needs to be at least 3 characters long"),
 });
+
+export const SelectTicketSchema = z.object({
+  roomId: z.uuid({ version: "v4" }),
+  ticketId: z.uuid({ version: "v4" }),
+});
+
+export const RevealVotesSchema = z.object({
+  roomId: z.uuid({ version: "v4" }),
+});

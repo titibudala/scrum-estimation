@@ -50,6 +50,7 @@ export async function joinRoom(_: any, formData: FormData) {
       [`${userId}:expertise`]: validateData.data.playerExpertise,
       [`${userId}:active`]: 0,
       [`${userId}:verified`]: +isAdminUser,
+      [`${userId}:voted`]: "",
     });
 
     if (!isAdminUser) {

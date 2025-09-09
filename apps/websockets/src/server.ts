@@ -32,6 +32,7 @@ roomJoinSocket.on("connection", async (socket) => {
         `${userId}:expertise`,
         `${userId}:active`,
         `${userId}:verified`,
+        `${userId}:voted`,
       ]);
     }
   });
@@ -56,6 +57,7 @@ roomSocket.on("connection", async (socket) => {
           `${userId}:expertise`,
           `${userId}:active`,
           `${userId}:verified`,
+          `${userId}:voted`,
         ],
         60
       ),
@@ -73,12 +75,56 @@ roomSocket.on("connection", async (socket) => {
           `${playerId}:expertise`,
           `${playerId}:active`,
           `${playerId}:verified`,
+          `${playerId}:voted`,
         ],
         60
       ),
     ]);
 
     roomJoinSocket.to(playerId).emit("room:player:join", 1);
+  });
+
+  socket.on("room:player:vote", async (measurementValue) => {
+    const hasVoted = measurementValue.length ? 1 : 0;
+
+    await redis.hSet(`room:${roomId}:players`, `${userId}:voted`, hasVoted);
+
+    const { entries } = await redis.hScan(`room:${roomId}:players`, "0", {
+      MATCH: `${userId}:*`,
+      COUNT: 100,
+    });
+
+    const mappedEntries: Record<any, any> = {};
+
+    for (const entry of entries) {
+      mappedEntries[entry.field.replace(`${userId}:`, "")] = entry.value;
+    }
+
+    const activeTicketId = await redis.json.GET(`room:${roomId}:config`, {
+      path: ".activeTicket",
+    });
+
+    if (hasVoted && activeTicketId) {
+      await redis.json.SET(
+        `room:${roomId}:ticket`,
+        `$.[?(@.id == "${activeTicketId}")].votes`,
+        {
+          [userId]: {
+            name: mappedEntries.name,
+            expertise: mappedEntries.expertise,
+            vote: measurementValue,
+          },
+        }
+      );
+
+      return;
+    }
+
+    if (!hasVoted && activeTicketId) {
+      await redis.json.DEL(`room:${roomId}:ticket`, {
+        path: `$.[?(@.id == "${activeTicketId}")].votes.${userId}`,
+      });
+    }
   });
 
   await Promise.all([
@@ -91,6 +137,7 @@ roomSocket.on("connection", async (socket) => {
       `${userId}:expertise`,
       `${userId}:active`,
       `${userId}:verified`,
+      `${userId}:voted`,
     ]),
   ]);
 

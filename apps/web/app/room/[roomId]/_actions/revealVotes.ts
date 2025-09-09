@@ -1,26 +1,22 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { z } from "zod";
 import { redis } from "@/app/_lib/redis";
-import { CreateTicketSchema } from "@workspace/shared/validator";
+import { RevealVotesSchema } from "@workspace/shared/validator";
 import { getJWTPayload } from "@workspace/shared/token";
 
-export async function createTicket(_: any, formData: FormData) {
+export async function revealVotes(_: any, data: { roomId: string }) {
   try {
     const rawData = {
-      roomId: formData.get("roomId") as string,
-      ticketTitle: formData.get("ticketTitle") as string,
+      roomId: data.roomId,
     };
 
-    const validateData = CreateTicketSchema.safeParse(rawData);
+    const validateData = RevealVotesSchema.safeParse(rawData);
 
     if (!validateData.success) {
       return {
         success: false,
-        message: "Wrong values used in the form",
-        errors: z.flattenError(validateData.error),
-        data: rawData,
+        message: "Wrong type of id",
       };
     }
 
@@ -33,16 +29,29 @@ export async function createTicket(_: any, formData: FormData) {
 
     if (!userId) throw Error("No active session found");
 
-    await redis.json.ARRAPPEND(`room:${validateData.data.roomId}:ticket`, "$", {
-      id: crypto.randomUUID(),
-      ticketTitle: validateData.data.ticketTitle,
-      completed: false,
-      votes: {}
-    });
+    const activeTicketId = await redis.json.GET(
+      `room:${validateData.data.roomId}:config`,
+      {
+        path: ".activeTicket",
+      }
+    );
+
+    if (!activeTicketId) {
+      return {
+        success: false,
+        message: "No active ticket found",
+      };
+    }
+
+    await redis.json.SET(
+      `room:${validateData.data.roomId}:ticket`,
+      `$.[?(@.id == "${activeTicketId}")].completed`,
+      true
+    );
 
     return {
       success: true,
-      message: "Ticket created",
+      message: "Votes revealed",
     };
   } catch (error: any) {
     return {
