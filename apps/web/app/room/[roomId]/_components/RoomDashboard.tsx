@@ -90,7 +90,9 @@ export default function RoomDashboard() {
       </div>
 
       <div className="w-full">
-        <RoomVotesReveal isDisabled={isActiveTicketCompleted} />
+        <RoomVotesReveal
+          isDisabled={isActiveTicketCompleted || !roomConfig?.activeTicket}
+        />
 
         <p className="py-6 font-bold text-xl">ROOM CONFIG</p>
         <ul className="pb-2">

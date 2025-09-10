@@ -13,7 +13,7 @@ export default function RoomMeasurementList({
 
   return (
     <div className="pb-2">
-      <p className="py-6 font-bold text-xl">CARDS TO CHOOSE</p>
+      <p className="pb-6 font-bold text-xl">CARDS TO CHOOSE</p>
 
       <form>
         <fieldset className="flex gap-6">

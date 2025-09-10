@@ -13,7 +13,7 @@ export default function MainLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="max-w-7xl w-full m-auto px-4">{children}</body>
+      <body className="max-w-7xl w-full m-auto px-4 mb-30">{children}</body>
     </html>
   );
 }

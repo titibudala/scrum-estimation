@@ -105,7 +105,7 @@ roomSocket.on("connection", async (socket) => {
     });
 
     if (hasVoted && activeTicketId) {
-      await redis.json.SET(
+      await redis.json.MERGE(
         `room:${roomId}:ticket`,
         `$.[?(@.id == "${activeTicketId}")].votes`,
         {
