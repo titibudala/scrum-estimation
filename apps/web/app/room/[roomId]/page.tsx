@@ -2,10 +2,11 @@
 
 import { redirect } from "next/navigation";
 import { redis } from "@/app/_lib/redis";
-import { cookies } from "next/headers";
-import { getJWTPayload } from "@workspace/shared/token";
+import { assertUserSession } from "@/app/_utils/session";
+import { assertRoomConfig } from "@/app/_utils/redis";
 
 import RoomDashboard from "./_components/RoomDashboard";
+import AppPageTitle from "@/app/_components/AppPageTitle";
 
 export default async function RoomMainPage({
   params,
@@ -13,33 +14,25 @@ export default async function RoomMainPage({
   params: Promise<{ roomId: string }>;
 }) {
   const { roomId } = await params;
-  const parsedCookies = await cookies();
+  const session = await assertUserSession();
+  const roomConfig = await assertRoomConfig(roomId);
 
-  const { userId } = await getJWTPayload(
-    parsedCookies.get("scrum-estimation-session")?.value,
-    process.env.SESSION_TOKEN
-  );
-
-  const isRoomAvailable = await redis.exists(`room:${roomId}:config`);
-
-  if (!isRoomAvailable || !userId) {
-    throw new Error("The room is unavailable");
-  }
-
-  const isPlayerAvailable = await redis.hExists(
+  const isPlayerVerified = await redis.hExists(
     `room:${roomId}:players`,
-    `${userId}:name`
+    `${session.userId}:verified`
   );
 
-  if (!isPlayerAvailable) {
+  if (!Number(isPlayerVerified)) {
     return redirect(`/room/${roomId}/join`);
   }
 
   return (
     <>
-      <h1 className="title">MAIN ROOM PAGE</h1>
+      <AppPageTitle title={roomConfig?.name || ""} />
 
-      <RoomDashboard />
+      <main className="app-container pb-16">
+        <RoomDashboard />
+      </main>
     </>
   );
 }

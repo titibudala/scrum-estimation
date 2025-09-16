@@ -3,6 +3,7 @@
 import { useActionState, startTransition } from "react";
 import { useParams } from "next/navigation";
 import { selectTicket } from "../_actions/selectTicket";
+import { Button } from "@/app/_components/shadcn/ui/button";
 
 export default function RoomTicketList({
   roomTickets,
@@ -31,7 +32,7 @@ export default function RoomTicketList({
             </li>
             <li>
               <span className="text-gray-500">TICKET TITLE: </span>
-              {ticket?.ticketTitle}
+              {ticket?.title}
             </li>
             <li>
               <span className="text-gray-500">COMPLETED: </span>
@@ -39,10 +40,10 @@ export default function RoomTicketList({
             </li>
             <li>
               <span className="text-gray-500">VOTES: </span>
-              {JSON.stringify(ticket?.votes)}
+              {JSON.stringify(ticket?.votes) || "No votes available"}
             </li>
-            <button
-              className="action"
+            <Button
+              className="mt-1"
               onClick={() =>
                 startTransition(() =>
                   action({ ticketId: ticket.id, roomId: roomId as string })
@@ -50,8 +51,8 @@ export default function RoomTicketList({
               }
               disabled={isPending || isTicketActive}
             >
-              {isTicketActive ? "SELECTED" : "SELECT"}
-            </button>
+              {isTicketActive ? "Selected" : "Select"}
+            </Button>
           </ul>
         );
       })}

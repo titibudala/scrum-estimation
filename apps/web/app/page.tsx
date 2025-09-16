@@ -1,24 +1,21 @@
-import Link from "next/link";
-
 import AppJoinRoom from "./_components/AppJoinRoom";
+import AppPageTitle from "./_components/AppPageTitle";
+import AppCreateRoom from "./_components/AppCreateRoom";
 
 export default function MainPage() {
   return (
     <>
-      <h1 className="title">SCRUM ESTIMATION</h1>
+      <AppPageTitle
+        title="Scrum Estimation"
+        subTitle="A collaborative tool that helps agile teams quickly estimate the effort or complexity of tasks by voting in real time."
+      />
 
-      <main>
-        <ul className="flex flex-col gap-8">
-          <li>
-            <p>Start a new room here:</p>
-            <Link className="action" href="/room/create">
-              CREATE ROOM
-            </Link>
-          </li>
-          <li>
-            <AppJoinRoom />
-          </li>
-        </ul>
+      <main className="app-container flex items-start gap-6 pb-16">
+        <AppCreateRoom />
+
+        <p className="p-5">or</p>
+
+        <AppJoinRoom />
       </main>
     </>
   );

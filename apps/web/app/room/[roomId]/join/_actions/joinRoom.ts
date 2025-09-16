@@ -2,38 +2,25 @@
 
 import { redis } from "@/app/_lib/redis";
 import { z } from "zod";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { JoinRoomSchema } from "@workspace/shared/validator";
-import { getJWTPayload } from "@workspace/shared/token";
+import {
+  JoinRoomSchema,
+  JoinRoomSchemaTypes,
+} from "@workspace/shared/validator";
+import { assertUserSession } from "@/app/_utils/session";
 
-export async function joinRoom(_: any, formData: FormData) {
-  const rawData = {
-    roomId: formData.get("roomId") as string,
-    playerName: formData.get("playerName") as string,
-    playerExpertise: formData.get("playerExpertise") as string,
-  };
-
+export async function joinRoom(_: any, payload: JoinRoomSchemaTypes) {
   try {
-    const validateData = JoinRoomSchema.safeParse(rawData);
+    const session = await assertUserSession();
+    const validateData = JoinRoomSchema.safeParse(payload);
 
     if (!validateData.success) {
       return {
         success: false,
         message: "Wrong values used in the form",
         errors: z.flattenError(validateData.error),
-        data: rawData,
       };
     }
-
-    const cookieStore = await cookies();
-    const userSessionJWT = cookieStore.get("scrum-estimation-session")?.value;
-    const { userId } = await getJWTPayload(
-      userSessionJWT,
-      process.env.SESSION_TOKEN
-    );
-
-    if (!userId) throw Error("No active session found");
 
     const adminId = await redis.json.get(
       `room:${validateData.data.roomId}:config`,
@@ -42,15 +29,15 @@ export async function joinRoom(_: any, formData: FormData) {
       }
     );
 
-    const isAdminUser = userId === adminId;
+    const isAdminUser = session.userId === adminId;
 
     await redis.hSet(`room:${validateData.data.roomId}:players`, {
-      [`${userId}:id`]: userId as string,
-      [`${userId}:name`]: validateData.data.playerName,
-      [`${userId}:expertise`]: validateData.data.playerExpertise,
-      [`${userId}:active`]: 0,
-      [`${userId}:verified`]: +isAdminUser,
-      [`${userId}:voted`]: "",
+      [`${session.userId}:id`]: session.userId as string,
+      [`${session.userId}:name`]: validateData.data.playerName,
+      [`${session.userId}:expertise`]: validateData.data.playerExpertise,
+      [`${session.userId}:active`]: 0,
+      [`${session.userId}:verified`]: +isAdminUser,
+      [`${session.userId}:voted`]: "",
     });
 
     if (!isAdminUser) {
@@ -66,5 +53,5 @@ export async function joinRoom(_: any, formData: FormData) {
     };
   }
 
-  redirect(`/room/${rawData.roomId}`);
+  redirect(`/room/${payload.roomId}`);
 }

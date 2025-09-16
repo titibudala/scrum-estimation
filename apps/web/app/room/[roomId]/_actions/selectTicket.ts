@@ -1,21 +1,17 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { redis } from "@/app/_lib/redis";
 import { SelectTicketSchema } from "@workspace/shared/validator";
-import { getJWTPayload } from "@workspace/shared/token";
+import { assertUserSession } from "@/app/_utils/session";
 
 export async function selectTicket(
   _: any,
-  data: { ticketId: string; roomId: string }
+  payload: { ticketId: string; roomId: string }
 ) {
   try {
-    const rawData = {
-      roomId: data.roomId,
-      ticketId: data.ticketId,
-    };
+    await assertUserSession();
 
-    const validateData = SelectTicketSchema.safeParse(rawData);
+    const validateData = SelectTicketSchema.safeParse(payload);
 
     if (!validateData.success) {
       return {
@@ -23,15 +19,6 @@ export async function selectTicket(
         message: "Wrong type of id",
       };
     }
-
-    const cookieStore = await cookies();
-    const userSessionJWT = cookieStore.get("scrum-estimation-session")?.value;
-    const { userId } = await getJWTPayload(
-      userSessionJWT,
-      process.env.SESSION_TOKEN
-    );
-
-    if (!userId) throw Error("No active session found");
 
     await redis.json.SET(
       `room:${validateData.data.roomId}:config`,

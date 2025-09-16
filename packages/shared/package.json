@@ -14,6 +14,18 @@
       "require": "./dist/validator.js",
       "default": "./dist/validator.js",
       "types": "./dist/validator.d.ts"
+    },
+    "./data": {
+      "import": "./dist/data.js",
+      "require": "./dist/data.js",
+      "default": "./dist/data.js",
+      "types": "./dist/data.d.ts"
+    },
+    "./types": {
+      "import": "./dist/types.js",
+      "require": "./dist/types.js",
+      "default": "./dist/types.js",
+      "types": "./dist/types.d.ts"
     }
   },
   "scripts": {

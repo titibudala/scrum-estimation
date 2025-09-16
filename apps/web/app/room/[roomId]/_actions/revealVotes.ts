@@ -1,36 +1,24 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { redis } from "@/app/_lib/redis";
 import { RevealVotesSchema } from "@workspace/shared/validator";
-import { getJWTPayload } from "@workspace/shared/token";
+import { assertUserSession } from "@/app/_utils/session";
 
-export async function revealVotes(_: any, data: { roomId: string }) {
+export async function revealVotes(_: any, payload: { roomId: string }) {
   try {
-    const rawData = {
-      roomId: data.roomId,
-    };
+    await assertUserSession();
 
-    const validateData = RevealVotesSchema.safeParse(rawData);
+    const validatedData = RevealVotesSchema.safeParse(payload);
 
-    if (!validateData.success) {
+    if (!validatedData.success) {
       return {
         success: false,
         message: "Wrong type of id",
       };
     }
 
-    const cookieStore = await cookies();
-    const userSessionJWT = cookieStore.get("scrum-estimation-session")?.value;
-    const { userId } = await getJWTPayload(
-      userSessionJWT,
-      process.env.SESSION_TOKEN
-    );
-
-    if (!userId) throw Error("No active session found");
-
     const activeTicketId = await redis.json.GET(
-      `room:${validateData.data.roomId}:config`,
+      `room:${validatedData.data.roomId}:config`,
       {
         path: ".activeTicket",
       }
@@ -44,7 +32,7 @@ export async function revealVotes(_: any, data: { roomId: string }) {
     }
 
     await redis.json.SET(
-      `room:${validateData.data.roomId}:ticket`,
+      `room:${validatedData.data.roomId}:ticket`,
       `$.[?(@.id == "${activeTicketId}")].completed`,
       true
     );

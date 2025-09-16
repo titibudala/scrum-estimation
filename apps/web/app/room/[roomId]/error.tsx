@@ -2,12 +2,19 @@
 
 import Link from "next/link";
 
+import AppPageTitle from "@/app/_components/AppPageTitle";
+import { Button } from "@/app/_components/shadcn/ui/button";
+
 export default function ErrorPage() {
   return (
     <>
-      <h1 className="title">404 - IT DǍZǍNT ECSIST</h1>
+      <AppPageTitle title="Ooops - Room couldn't be found or something went wrong" />
 
-      <Link className="action" href="/"> GO HOME </Link>
+      <main className="app-container pb-16">
+        <Button asChild size="lg">
+          <Link href="/">Go back home</Link>
+        </Button>
+      </main>
     </>
   );
 }

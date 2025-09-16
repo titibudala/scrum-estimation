@@ -3,6 +3,7 @@
 import { useActionState, startTransition } from "react";
 import { revealVotes } from "../_actions/revealVotes";
 import { useParams } from "next/navigation";
+import { Button } from "@/app/_components/shadcn/ui/button";
 
 export default function RommVotesReveal({
   isDisabled,
@@ -16,14 +17,13 @@ export default function RommVotesReveal({
   });
 
   return (
-    <button
+    <Button
       onClick={() =>
         startTransition(() => action({ roomId: roomId as string }))
       }
-      className="action"
       disabled={isPending || isDisabled}
     >
-      REVEAL VOTES
-    </button>
+      Reveal votes
+    </Button>
   );
 }

@@ -21,7 +21,7 @@ export default function RoomDashboard() {
     <div className="flex">
       <div className="w-full">
         <RoomMeasurementList
-          measurementList={roomConfig?.measurement}
+          measurementList={roomConfig?.vote}
           onVote={voteTicket}
         />
 
@@ -106,11 +106,11 @@ export default function RoomDashboard() {
           </li>
           <li>
             <span className="text-gray-500">ROOM NAME: </span>
-            {roomConfig?.roomName}
+            {roomConfig?.name}
           </li>
           <li>
-            <span className="text-gray-500">MEASUREMENT: </span>
-            {roomConfig?.measurement?.join(", ")}
+            <span className="text-gray-500">VOTE MECHANISM: </span>
+            {roomConfig?.vote?.join(", ")}
           </li>
           <li>
             <span className="text-gray-500">SECURITY: </span>
@@ -118,7 +118,7 @@ export default function RoomDashboard() {
           </li>
           <li>
             <span className="text-gray-500">ACTIVE TICKET: </span>
-            {roomConfig?.activeTicket}
+            {roomConfig?.activeTicket || "No active ticket"}
           </li>
         </ul>
 

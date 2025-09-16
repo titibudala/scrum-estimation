@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { createTicket } from "../_actions/createTicket";
 import { useParams } from "next/navigation";
+import { Button } from "@/app/_components/shadcn/ui/button";
 
 export default function RoomTicketCreate() {
   const { roomId } = useParams();
@@ -18,12 +19,15 @@ export default function RoomTicketCreate() {
         <input type="hidden" name="roomId" value={roomId} />
 
         <div>
-          <label htmlFor="ticket-title" className="hidden">Ticket title:</label>
+          <label htmlFor="ticket-title" className="hidden">
+            Ticket title:
+          </label>
           <input
             type="text"
             name="ticketTitle"
             id="ticket-title"
             placeholder="My new ticket"
+            className="border-1 p-1.5 border-foreground rounded-md"
             defaultValue={formState.data?.ticketTitle}
             required
           />
@@ -34,9 +38,9 @@ export default function RoomTicketCreate() {
           )}
         </div>
 
-        <button disabled={isFormPending} className="action">
+        <Button disabled={isFormPending} className="action">
           ADD TICKET
-        </button>
+        </Button>
       </form>
     </>
   );

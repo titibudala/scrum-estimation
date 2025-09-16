@@ -1,44 +1,40 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { z } from "zod";
 import { redis } from "@/app/_lib/redis";
 import { CreateTicketSchema } from "@workspace/shared/validator";
-import { getJWTPayload } from "@workspace/shared/token";
+import { assertUserSession } from "@/app/_utils/session";
 
 export async function createTicket(_: any, formData: FormData) {
   try {
+    await assertUserSession();
+
     const rawData = {
       roomId: formData.get("roomId") as string,
       ticketTitle: formData.get("ticketTitle") as string,
     };
 
-    const validateData = CreateTicketSchema.safeParse(rawData);
+    const validatedData = CreateTicketSchema.safeParse(rawData);
 
-    if (!validateData.success) {
+    if (!validatedData.success) {
       return {
         success: false,
         message: "Wrong values used in the form",
-        errors: z.flattenError(validateData.error),
+        errors: z.flattenError(validatedData.error),
         data: rawData,
       };
     }
 
-    const cookieStore = await cookies();
-    const userSessionJWT = cookieStore.get("scrum-estimation-session")?.value;
-    const { userId } = await getJWTPayload(
-      userSessionJWT,
-      process.env.SESSION_TOKEN
+    await redis.json.ARRAPPEND(
+      `room:${validatedData.data.roomId}:ticket`,
+      "$",
+      {
+        id: crypto.randomUUID(),
+        title: validatedData.data.ticketTitle,
+        completed: false,
+        votes: {},
+      }
     );
-
-    if (!userId) throw Error("No active session found");
-
-    await redis.json.ARRAPPEND(`room:${validateData.data.roomId}:ticket`, "$", {
-      id: crypto.randomUUID(),
-      ticketTitle: validateData.data.ticketTitle,
-      completed: false,
-      votes: {}
-    });
 
     return {
       success: true,

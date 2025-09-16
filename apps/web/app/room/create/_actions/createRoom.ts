@@ -1,49 +1,37 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { redis } from "@/app/_lib/redis";
-import { CreateRoomSchema } from "@workspace/shared/validator";
-import { getJWTPayload } from "@workspace/shared/token";
+import {
+  CreateRoomSchema,
+  CreateRoomSchemaTypes,
+} from "@workspace/shared/validator";
+import { assertUserSession } from "@/app/_utils/session";
 
-export async function createRoom(_: any, formData: FormData) {
+export async function createRoom(_: any, data: CreateRoomSchemaTypes) {
   const newRoomId = crypto.randomUUID();
 
   try {
-    const rawData = {
-      roomName: formData.get("roomName") as string,
-      measurementType: formData.get("measurementType") as string,
-      securityType: formData.get("securityType") as string,
-    };
+    const session = await assertUserSession();
+    const validatedPayload = CreateRoomSchema.safeParse(data);
 
-    const validateData = CreateRoomSchema.safeParse(rawData);
-
-    if (!validateData.success) {
+    if (!validatedPayload.success) {
       return {
         success: false,
         message: "Wrong values used in the form",
-        errors: z.flattenError(validateData.error),
-        data: rawData,
+        errors: z.flattenError(validatedPayload.error),
       };
     }
-
-    const cookieStore = await cookies();
-    const userSessionJWT = cookieStore.get("scrum-estimation-session")?.value;
-    const { userId } = await getJWTPayload(
-      userSessionJWT,
-      process.env.SESSION_TOKEN
-    );
-
-    if (!userId) throw Error("No active session found");
 
     Promise.all([
       redis.json.SET(`room:${newRoomId}:config`, "$", {
         id: newRoomId,
-        adminId: userId as string,
-        roomName: validateData.data.roomName,
-        measurement: ["0", "1", "2", "3", "5", "8"],
-        security: validateData.data.securityType,
+        name: validatedPayload.data.roomName,
+        adminId: session.userId as string,
+        security: validatedPayload.data.roomSecurity,
+        vote: validatedPayload.data.roomVote,
+        expertise: validatedPayload.data.roomExpertise,
         activeTicket: "",
       }),
       redis.json.SET(`room:${newRoomId}:ticket`, "$", []),

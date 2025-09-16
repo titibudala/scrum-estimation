@@ -1,6 +1,9 @@
 import * as jose from "jose";
 
-export async function getJWTPayload(token?: string, secret?: string) {
+export async function getJWTPayload<T>(
+  token?: string,
+  secret?: string
+): Promise<Partial<T>> {
   if (!token || !secret) return {};
 
   const sanitizedSecret = new TextEncoder().encode(secret);
@@ -8,7 +11,7 @@ export async function getJWTPayload(token?: string, secret?: string) {
   try {
     const { payload } = await jose.jwtVerify(token, sanitizedSecret);
 
-    return payload;
+    return payload as T;
   } catch {
     return {};
   }

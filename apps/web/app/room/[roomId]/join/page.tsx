@@ -1,8 +1,6 @@
-"use server";
-
-import { redis } from "@/app/_lib/redis";
-
-import RoomJoin from "./_components/RoomJoin";
+import RoomJoinForm from "./_components/RoomJoinForm";
+import AppPageTitle from "@/app/_components/AppPageTitle";
+import { assertRoomConfig } from "@/app/_utils/redis";
 
 export default async function RoomJoinPage({
   params,
@@ -10,21 +8,15 @@ export default async function RoomJoinPage({
   params: Promise<{ roomId: string }>;
 }) {
   const { roomId } = await params;
-
-  const isRoomAvailable = await redis.exists(`room:${roomId}:config`);
-
-  if (!isRoomAvailable) {
-    throw new Error("The room is unavailable");
-  }
+  const roomConfig = await assertRoomConfig(roomId);
 
   return (
     <>
-      <h1 className="title">
-        JOIN ROOM WITH ID
-        <span className="block">{roomId}</span>
-      </h1>
+      <AppPageTitle title={`Join room with id ${roomId}`} />
 
-      <RoomJoin />
+      <main className="app-container pb-16">
+        <RoomJoinForm roomConfig={roomConfig} />
+      </main>
     </>
   );
 }
