@@ -160,8 +160,8 @@ export default function RoomJoinForm({ roomConfig }: RoomJoinFormProps) {
               <CheckCircle2Icon />
               <AlertTitle>Success!</AlertTitle>
               <AlertDescription>
-                You&apos;ve requested to join - wait for the any online player or
-                admin to verify you and let you in...
+                You&apos;ve requested to join - wait for the any online player
+                or admin to verify you and let you in...
                 <Loader2Icon className="animate-spin" />
               </AlertDescription>
             </Alert>

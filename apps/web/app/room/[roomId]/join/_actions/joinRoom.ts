@@ -8,6 +8,7 @@ import {
   JoinRoomSchemaTypes,
 } from "@workspace/shared/validator";
 import { assertUserSession } from "@/app/_utils/session";
+import { getRoomConfig } from "@/app/_utils/redis";
 
 export async function joinRoom(_: any, payload: JoinRoomSchemaTypes) {
   try {
@@ -22,25 +23,21 @@ export async function joinRoom(_: any, payload: JoinRoomSchemaTypes) {
       };
     }
 
-    const adminId = await redis.json.get(
-      `room:${validateData.data.roomId}:config`,
-      {
-        path: [".adminId"],
-      }
-    );
+    const roomConfig = await getRoomConfig(validateData.data.roomId);
 
-    const isAdminUser = session.userId === adminId;
+    const isVerified =
+      session.userId === roomConfig?.adminId || roomConfig?.security === "OPEN";
 
     await redis.hSet(`room:${validateData.data.roomId}:players`, {
       [`${session.userId}:id`]: session.userId as string,
       [`${session.userId}:name`]: validateData.data.playerName,
       [`${session.userId}:expertise`]: validateData.data.playerExpertise,
       [`${session.userId}:active`]: 0,
-      [`${session.userId}:verified`]: +isAdminUser,
+      [`${session.userId}:verified`]: +isVerified,
       [`${session.userId}:voted`]: "",
     });
 
-    if (!isAdminUser) {
+    if (!isVerified) {
       return {
         success: true,
         message: `All good - wait for the admin to verify you and let you in`,
