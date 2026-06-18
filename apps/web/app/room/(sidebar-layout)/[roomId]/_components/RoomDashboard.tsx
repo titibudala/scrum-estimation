@@ -18,8 +18,8 @@ export default function RoomDashboard() {
   } = useRoomSocket();
 
   return (
-    <div className="flex">
-      <div className="w-full">
+    <div>
+      <div className="w-full pb-100">
         <RoomMeasurementList
           measurementList={roomConfig?.vote}
           onVote={voteTicket}

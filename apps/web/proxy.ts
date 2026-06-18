@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getJWTPayload, signJWTPayload } from "@workspace/shared/token";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { userId } = await getJWTPayload<{ userId: string }>(
     request.cookies.get("scrum-estimation-session")?.value,
     process.env.SESSION_TOKEN
